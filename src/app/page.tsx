@@ -30,7 +30,7 @@ interface VideoDetails {
 
 export default function AudioScriberPage() {
   const [videoUrl, setVideoUrl] = useState('');
-  const [audioUrl, setAudioDownloadUrl] = useState('');
+  const [audioDownloadUrl, setAudioDownloadUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
   const [selectedFormat, setSelectedFormat] = useState('mp3');
