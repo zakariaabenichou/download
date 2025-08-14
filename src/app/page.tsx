@@ -30,6 +30,7 @@ interface VideoDetails {
 
 export default function AudioScriberPage() {
   const [videoUrl, setVideoUrl] = useState('');
+  const [audioUrl, setAudioDownloadUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
   const [selectedFormat, setSelectedFormat] = useState('mp3');
@@ -71,10 +72,17 @@ export default function AudioScriberPage() {
       setIsLoading(false);
     }
   };
+  
+  const handleExtractAudio = async () => {
+  const response = await fetch(`/api/youtube?url=${encodeURIComponent(videoUrl)}`);
+  const data = await response.json();
+  setVideoDetails({ title: data.title, thumbnail: data.thumbnail });
+  setAudioDownloadUrl(data.audioUrl); // save direct URL
+};
 
   const handleDownload = () => {
     // This function is a placeholder as requested.
-    downloadAudioFromUrl(videoUrl, "my-video.mp3");
+  downloadAudioFromUrl(audioDownloadUrl, `${videoDetails?.title}.${selectedFormat}`);
     // The user will implement the actual download logic.
     console.log(`Download triggered for format: ${selectedFormat}`);
     toast({
