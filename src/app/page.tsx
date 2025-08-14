@@ -73,6 +73,7 @@ export default function AudioScriberPage() {
 
   const handleDownload = () => {
     // This function is a placeholder as requested.
+    downloadAudioFromUrl(videoUrl, "my-video.mp3");
     // The user will implement the actual download logic.
     console.log(`Download triggered for format: ${selectedFormat}`);
     toast({
