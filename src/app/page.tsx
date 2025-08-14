@@ -46,9 +46,10 @@ export default function AudioScriberPage() {
   const handleDownload = () => {
 
     if (!audioDownloadUrl) {
+    console.log(`Download triggered for format: ${audioDownloadUrl}`);
   toast({
     title: "Error",
-    description: "No audio stream available yet.",
+    description: "No audio stream available yet. ${audioDownloadUrl}",
     variant: "destructive"
   });
   return;
