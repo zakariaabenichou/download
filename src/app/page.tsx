@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { Download, Film, Loader2, AudioLines } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
 import {
   Select,
   SelectContent,
@@ -31,45 +30,11 @@ interface VideoDetails {
 export default function AudioScriberPage() {
   const [videoUrl, setVideoUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
   const [selectedFormat, setSelectedFormat] = useState('mp3');
   const { toast } = useToast();
 
-  const progressText = useMemo(() => {
-    if (progress < 30) return "Initializing...";
-    if (progress < 60) return "Fetching video details...";
-    if (progress < 90) return "Extracting audio track...";
-    if (progress < 100) return "Finalizing...";
-    return "Complete!";
-  }, [progress]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isLoading) {
-      interval = setInterval(() => {
-        setProgress(prev => {
-          const newProgress = prev + 2;
-          if (newProgress >= 100) {
-            clearInterval(interval);
-            setProgress(100);
-            setTimeout(() => {
-              setVideoDetails({
-                title: 'Exploring the Alps: A Scenic Journey',
-                thumbnail: 'https://placehold.co/1280x720.png',
-              });
-              setIsLoading(false);
-            }, 500);
-            return 100;
-          }
-          return newProgress;
-        });
-      }, 80);
-    }
-    return () => clearInterval(interval);
-  }, [isLoading]);
-
-  const handleExtractAudio = () => {
+  const handleExtractAudio = async () => {
     try {
       new URL(videoUrl);
     } catch (_) {
@@ -82,8 +47,28 @@ export default function AudioScriberPage() {
     }
 
     setIsLoading(true);
-    setProgress(0);
     setVideoDetails(null);
+
+    try {
+      const response = await fetch(`/api/youtube?url=${encodeURIComponent(videoUrl)}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch video details.');
+      }
+      const data = await response.json();
+      setVideoDetails({
+        title: data.title,
+        thumbnail: data.thumbnail,
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDownload = () => {
@@ -140,13 +125,6 @@ export default function AudioScriberPage() {
                 'Extract Audio'
               )}
             </Button>
-            
-            {isLoading && (
-              <div className="space-y-3 pt-4 text-center transition-opacity duration-500">
-                <Progress value={progress} className="w-full" />
-                <p className="text-sm text-muted-foreground">{progressText}</p>
-              </div>
-            )}
             
             {videoDetails && !isLoading && (
               <div className="pt-6 animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
