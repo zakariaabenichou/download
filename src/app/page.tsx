@@ -134,8 +134,8 @@ export default function AudioScriberPage() {
                       <Image
                         src={videoDetails.thumbnail}
                         alt="Video thumbnail"
-                        width={1280}
-                        height={720}
+                        width={480}
+                        height={360}
                         className="rounded-lg aspect-video object-cover"
                         data-ai-hint="video player"
                       />
