@@ -36,17 +36,12 @@ export default function AudioScriberPage() {
   const [selectedFormat, setSelectedFormat] = useState('mp3');
   const { toast } = useToast();
 
-  const handleExtractAudio = async () => {
-    try {
-      new URL(videoUrl);
-    } catch (_) {
-      toast({
-        title: 'Invalid URL',
-        description: 'Please enter a valid video URL.',
-        variant: 'destructive',
-      });
-      return;
-    }
+ const handleExtractAudio = async () => {
+  const response = await fetch(`/api/youtube?url=${encodeURIComponent(videoUrl)}`);
+  const data = await response.json();
+  setVideoDetails({ title: data.title, thumbnail: data.thumbnail });
+  setAudioDownloadUrl(data.audioUrl); // save direct URL
+};
 
     setIsLoading(true);
     setVideoDetails(null);
@@ -73,12 +68,6 @@ export default function AudioScriberPage() {
     }
   };
   
-  const handleExtractAudio = async () => {
-  const response = await fetch(`/api/youtube?url=${encodeURIComponent(videoUrl)}`);
-  const data = await response.json();
-  setVideoDetails({ title: data.title, thumbnail: data.thumbnail });
-  setAudioDownloadUrl(data.audioUrl); // save direct URL
-};
 
   const handleDownload = () => {
     // This function is a placeholder as requested.
