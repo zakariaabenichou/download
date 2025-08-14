@@ -49,7 +49,7 @@ export default function AudioScriberPage() {
     console.log(`Download triggered for format: ${audioDownloadUrl}`);
   toast({
     title: "Error",
-    description: "No audio stream available yet. ${audioDownloadUrl}",
+    description: `No audio stream available yet. ${audioDownloadUrl}`,
     variant: "destructive"
   });
   return;
