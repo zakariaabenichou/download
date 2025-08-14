@@ -38,7 +38,9 @@ export default function AudioScriberPage() {
 
  const handleExtractAudio = async () => {
   const response = await fetch(`/api/youtube?url=${encodeURIComponent(videoUrl)}`);
+   console.log("Response status:", response.status);
   const data = await response.json();
+   console.log("Response data:", data); // See if there's audioUrl in here
   setVideoDetails({ title: data.title, thumbnail: data.thumbnail });
   setAudioDownloadUrl(data.audioUrl); // save direct URL
 };
