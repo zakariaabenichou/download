@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { download } from 'download.js'
 import Image from 'next/image';
 import { Download, Film, Loader2, AudioLines } from 'lucide-react';
 import { Button } from '@/components/ui/button';
