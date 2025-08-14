@@ -43,32 +43,6 @@ export default function AudioScriberPage() {
   setAudioDownloadUrl(data.audioUrl); // save direct URL
 };
 
-    setIsLoading(true);
-    setVideoDetails(null);
-
-    try {
-      const response = await fetch(`/api/youtube?url=${encodeURIComponent(videoUrl)}`);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch video details.');
-      }
-      const data = await response.json();
-      setVideoDetails({
-        title: data.title,
-        thumbnail: data.thumbnail,
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-
   const handleDownload = () => {
     // This function is a placeholder as requested.
   downloadAudioFromUrl(audioDownloadUrl, `${videoDetails?.title}.${selectedFormat}`);
