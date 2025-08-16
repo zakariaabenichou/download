@@ -6,7 +6,10 @@ export default async function handler(req, res) {
 
   try {
     const info = await ytdl.getInfo(url);
-    const audioFormat = ytdl.chooseFormat(info.formats, { quality: 'highestaudio' });
+    const audioFormat = ytdl.chooseFormat(
+  info.formats.filter(f => f.mimeType?.includes('audio/')),
+  { quality: 'highestaudio' }
+);
 
     res.status(200).json({
       title: info.videoDetails.title,
