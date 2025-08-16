@@ -36,35 +36,36 @@ export default function AudioScriberPage() {
   const [selectedFormat, setSelectedFormat] = useState('mp3');
   const { toast } = useToast();
 
- const handleExtractAudio = async () => {
+const handleExtractAudio = async () => {
   const response = await fetch(`/api/youtube?url=${encodeURIComponent(videoUrl)}`);
-   console.log("Response status:", response.status);
   const data = await response.json();
-   console.log("Response data:", data); // See if there's audioUrl in here
+
   setVideoDetails({ title: data.title, thumbnail: data.thumbnail });
-  setAudioDownloadUrl(data.audioUrl); // save direct URL
+  setAudioDownloadUrl(data.audioUrl); // This now points to /api/download-audio
 };
 
-  const handleDownload = () => {
-
-    if (!audioDownloadUrl) {
-    console.log(`Download triggered for format: ${audioDownloadUrl}`);
-  toast({
-    title: "Error",
-    description: `No audio stream available yet. ${audioDownloadUrl}`,
-    variant: "destructive"
-  });
-  return;
-}
-    // This function is a placeholder as requested.
-  downloadAudioFromUrl(audioDownloadUrl, `${videoDetails?.title}.${selectedFormat}`);
-    // The user will implement the actual download logic.
-    console.log(`Download triggered for format: ${selectedFormat}`);
+const handleDownload = async () => {
+  if (!audioDownloadUrl) {
     toast({
-      title: 'Preparing Download',
-      description: `Your ${selectedFormat.toUpperCase()} file will begin downloading shortly.`,
+      title: "Error",
+      description: "No audio stream available yet.",
+      variant: "destructive"
     });
-  };
+    return;
+  }
+
+  const res = await fetch(audioDownloadUrl);
+  const blob = await res.blob();
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `${videoDetails?.title}.${selectedFormat}`;
+  link.click();
+
+  toast({
+    title: 'Preparing Download',
+    description: `Your ${selectedFormat.toUpperCase()} file will begin downloading shortly.`,
+  });
+};
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4 sm:p-6 lg:p-8">
