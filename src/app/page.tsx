@@ -38,9 +38,10 @@ export default function AudioScriberPage() {
 
 const handleExtractAudio = async () => {
   const response = await fetch(`/api/youtube?url=https://www.youtube.com/watch?v=RnNFDbKXYrU&list=RDqjPQAE3w2_g&index=9&ab_channel=NomadStrings}`);
-  const data = await response.json();
+  const data1 = await response.json();
   
     console.log("here is the data");
+    console.log(data1);
     console.log(data);
     console.log(response);
   /*setVideoDetails({ title: data.title, thumbnail: data.thumbnail });
