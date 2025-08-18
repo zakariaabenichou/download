@@ -40,6 +40,7 @@ const handleExtractAudio = async () => {
   const response = await fetch(`/api/youtube?url=${encodeURIComponent(videoUrl)}`);
   const data = await response.json();
 
+  console.log(data)
   setVideoDetails({ title: data.title, thumbnail: data.thumbnail });
   setAudioDownloadUrl(data.audioUrl); // This now points to /api/download-audio
 };
