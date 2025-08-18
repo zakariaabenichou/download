@@ -42,7 +42,6 @@ const handleExtractAudio = async () => {
   
     console.log("here is the data");
     console.log(data1);
-    console.log(data);
     console.log(response);
   /*setVideoDetails({ title: data.title, thumbnail: data.thumbnail });
   setAudioDownloadUrl(data.audioUrl); // This now points to /api/download-audio*/
