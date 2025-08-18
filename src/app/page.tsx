@@ -37,7 +37,7 @@ export default function AudioScriberPage() {
   const { toast } = useToast();
 
 const handleExtractAudio = async () => {
-  const response = await fetch(`/api/youtube?url=${encodeURIComponent(videoUrl)}`);
+  const response = await fetch(`/api/youtube?url=https://www.youtube.com/watch?v=RnNFDbKXYrU&list=RDqjPQAE3w2_g&index=9&ab_channel=NomadStrings}`);
   const data = await response.json();
 
   console.log(data)
