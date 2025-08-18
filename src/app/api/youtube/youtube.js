@@ -1,21 +1,20 @@
+import { NextRequest, NextResponse } from 'next/server';
 import ytdl from 'ytdl-core';
 
-export default async function handler(req, res) {
-  const { url } = req.query;
-  if (!url) return res.status(400).json({ error: 'Missing URL' });
+export async function GET(req: NextRequest) {
+  const url = req.nextUrl.searchParams.get('url');
+  if (!url) {
+    return NextResponse.json({ error: 'Missing URL' }, { status: 400 });
+  }
 
   try {
     const info = await ytdl.getInfo(url);
-    console.log("here the yt js");
-    console.log(info);
-    console.log(url);
-
-    res.status(200).json({
+    return NextResponse.json({
       title: info.videoDetails.title,
       thumbnail: info.videoDetails.thumbnails[0].url,
       audioUrl: `/api/download-audio?url=${encodeURIComponent(url)}`
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
