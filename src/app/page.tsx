@@ -1,27 +1,26 @@
 "use client";
 
-import { useState } from 'react';
-//import { downloadAudioFromUrl } from './download'
-import Image from 'next/image';
-import { Download, Film, Loader2, AudioLines } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import Image from "next/image";
+import { Download, Film, Loader2, AudioLines } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 interface VideoDetails {
   title: string;
@@ -29,47 +28,80 @@ interface VideoDetails {
 }
 
 export default function AudioScriberPage() {
-  const [videoUrl, setVideoUrl] = useState('');
-  const [audioDownloadUrl, setAudioDownloadUrl] = useState('');
+  const [videoUrl, setVideoUrl] = useState("");
+  const [audioDownloadUrl, setAudioDownloadUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
-  const [selectedFormat, setSelectedFormat] = useState('mp3');
+  const [selectedFormat, setSelectedFormat] = useState("mp3");
   const { toast } = useToast();
 
-const handleExtractAudio = async () => {
-const videoUrl = "https://www.youtube.com/watch?v=RnNFDbKXYrU&list=RDqjPQAE3w2_g&index=9&ab_channel=NomadStrings";
-const response = await fetch(`/api/youtube?url=${encodeURIComponent(videoUrl)}`); 
-const data1 = await response.json();
-  
-    console.log("here is the data");
-    console.log(data1);
-    console.log(response);
-  /*setVideoDetails({ title: data.title, thumbnail: data.thumbnail });
-  setAudioDownloadUrl(data.audioUrl); // This now points to /api/download-audio*/
-};
+  const handleExtractAudio = async () => {
+    if (!videoUrl) return;
 
-const handleDownload = async () => {
-  if (!audioDownloadUrl) {
-    toast({
-      title: "Error",
-      description: `No audio stream available yet.${audioDownloadUrl}`,
-      variant: "destructive"
-    });
-    return;
-  }
+    setIsLoading(true);
 
-  const res = await fetch(audioDownloadUrl);
-  const blob = await res.blob();
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `${videoDetails?.title}.${selectedFormat}`;
-  link.click();
+    try {
+      const response = await fetch(
+        `https://yt-api-server-dvrc.onrender.com/youtube?url=${encodeURIComponent(
+          videoUrl
+        )}`
+      );
 
-  toast({
-    title: 'Preparing Download',
-    description: `Your ${selectedFormat.toUpperCase()} file will begin downloading shortly.`,
-  });
-};
+      if (!response.ok) {
+        throw new Error("Failed to fetch audio");
+      }
+
+      const data = await response.json();
+
+      setVideoDetails({ title: data.title, thumbnail: data.thumbnail });
+      setAudioDownloadUrl(data.audioUrl);
+
+      toast({
+        title: "Success",
+        description: "Audio extracted successfully!",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Failed to extract audio",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!audioDownloadUrl) {
+      toast({
+        title: "Error",
+        description: "No audio available yet.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch(audioDownloadUrl);
+      const blob = await res.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${videoDetails?.title}.${selectedFormat}`;
+      link.click();
+
+      toast({
+        title: "Preparing Download",
+        description: `Your ${selectedFormat.toUpperCase()} file will begin downloading shortly.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to download audio",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4 sm:p-6 lg:p-8">
@@ -77,7 +109,7 @@ const handleDownload = async () => {
         <Card className="overflow-hidden shadow-2xl shadow-primary/10 backdrop-blur-sm bg-card/80">
           <CardHeader className="text-center p-6">
             <div className="mx-auto bg-primary/20 p-3 rounded-full w-fit mb-4 border border-primary/30">
-                <AudioLines className="h-8 w-8 text-primary-foreground" />
+              <AudioLines className="h-8 w-8 text-primary-foreground" />
             </div>
             <CardTitle className="text-3xl font-headline">AudioScriber</CardTitle>
             <CardDescription>
@@ -99,7 +131,7 @@ const handleDownload = async () => {
                 />
               </div>
             </div>
-            
+
             <Button
               onClick={handleExtractAudio}
               disabled={isLoading || !videoUrl}
@@ -112,10 +144,10 @@ const handleDownload = async () => {
                   Processing...
                 </>
               ) : (
-                'Extract Audio'
+                "Extract Audio"
               )}
             </Button>
-            
+
             {videoDetails && !isLoading && (
               <div className="pt-6 animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
                 <Card className="bg-background/50">
@@ -127,11 +159,12 @@ const handleDownload = async () => {
                         width={480}
                         height={360}
                         className="rounded-lg aspect-video object-cover"
-                        data-ai-hint="video player"
                       />
                     </div>
                     <div className="w-full space-y-4">
-                      <h3 className="text-lg font-semibold line-clamp-2">{videoDetails.title}</h3>
+                      <h3 className="text-lg font-semibold line-clamp-2">
+                        {videoDetails.title}
+                      </h3>
                       <div className="space-y-2">
                         <Label htmlFor="format-select">Audio Format</Label>
                         <Select value={selectedFormat} onValueChange={setSelectedFormat}>
